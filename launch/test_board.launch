@@ -1,0 +1,9 @@
+<launch>
+
+  <arg name="port" default="/dev/ttyACM0"/>
+
+<node name="rosflight_io" pkg="rosflight" type="rosflight_io" output="screen">
+  <param name="port" value="$(arg port)"/>
+</node>
+
+</launch>
