@@ -9,7 +9,7 @@ camera:
     gain: -2.5 # -10 to 10
 camera:
   pointgrey_camera:
-    frame_rate: 20
+    frame_rate: 5 # 20
     auto_exposure: False
     exposure: 0 # -7.58496 is minimum
     shutter_speed: 0.046 # 0.005

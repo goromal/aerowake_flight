@@ -1,0 +1,11 @@
+<launch>
+
+<node name="pointgrey_camera" pkg="pointgrey_camera_driver" type="camera_node">
+  <param name="camera_info_url" value="file://$(find aerowake_flight)/param/chameleon3_LLNL.yaml"/>
+  <param name="frame_rate" value="15"/>
+  <param name="auto_shutter" value="true"/>
+  <!--<param name="format7_color_coding" value="mono8"/>-->
+  <param name="auto_white_balance" value="true"/>
+</node>
+
+</launch>

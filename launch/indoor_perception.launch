@@ -1,0 +1,15 @@
+<launch>
+
+<arg name="show_img" default="false"/>
+
+<include file="$(find aerowake_flight)/launch/rosflight_board.launch"/>
+
+<include file="$(find aerowake_flight)/launch/camera_system_vicon.launch"/>
+
+<include file="$(find aerowake_vision)/launch/vision_system.launch">
+  <arg name="show_output" value="$(arg show_img)"/>
+</include>
+
+
+
+</launch>
