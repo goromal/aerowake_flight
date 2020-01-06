@@ -1,0 +1,56 @@
+<launch>
+
+<!-- ROSflight -->
+<node name="rosflight_io" pkg="rosflight" type="rosflight_io" output="screen">
+  <param name="port" value="/dev/ttyACM0"/>
+</node>
+
+<!-- controller -->
+<node name="controller" pkg="roscopter" type="controller" output="screen">
+  <remap from="estimate" to="odometry"/>
+  <param name="equilibrium_throttle" value="0.55"/>
+  <param name="x_dot_P" value="0.2"/>
+  <param name="x_dot_I" value="0"/>
+  <param name="x_dot_D" value="0"/>
+  <param name="y_dot_P" value="0.2"/>
+  <param name="y_dot_I" value="0"/>
+  <param name="y_dot_D" value="0"/>
+  <param name="z_dot_P" value="0.5"/>
+  <param name="z_dot_I" value="0"/>
+  <param name="z_dot_D" value="0"/>
+  <param name="north_P" value="0.65"/>
+  <param name="north_I" value="0"/>
+  <param name="north_D" value="0"/>
+  <param name="east_P" value=".65"/>
+  <param name="east_I" value="0"/>
+  <param name="east_D" value="0"/>
+  <param name="down_P" value="0.45"/>
+  <param name="down_I" value="0"/>
+  <param name="down_D" value="0"/>
+  <param name="psi_P" value="0.5"/>
+  <param name="psi_I" value="0"/>
+  <param name="psi_D" value="0"/>
+  <param name="tau" value="0.05"/>
+  <param name="max_roll" value="0.196"/> 
+  <param name="max_pitch" value="0.196"/>
+  <param name="max_yaw_rate" value="0.785"/>
+  <param name="max_throttle" value="0.85"/>
+  <param name="max_n_dot" value="1.5"/>
+  <param name="max_e_dot" value="1.5"/>
+  <param name="max_d_dot" value="1.25"/>
+
+</node>
+
+<!-- VICON sensor -->
+<node name="vicon_sensor" pkg="aerowake_utils" type="vicon_sensor.py" output="screen">
+  <remap from="vicon" to="/aerowake_drone/vicon/filtered"/>
+</node>
+
+<!-- ekf -->
+<node name="estimator" pkg="roscopter" type="ekf_node" output="screen">
+  <remap from="imu" to="/imu/data"/>
+  <remap from="odom" to="odometry"/>
+  <rosparam command="load" file="$(find aerowake_flight)/param/indoor_flight_ekf_params.yaml"/>
+</node>
+
+</launch>
