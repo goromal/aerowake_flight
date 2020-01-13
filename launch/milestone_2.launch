@@ -1,0 +1,26 @@
+<launch>
+
+<!-- ROSflight -->
+<node name="rosflight_io" pkg="rosflight" type="rosflight_io" output="screen">
+  <param name="port" value="/dev/ttyACM0"/>
+</node>
+
+<!-- controller -->
+<node name="controller" pkg="roscopter" type="controller" output="screen">
+  <remap from="estimate" to="odometry"/>
+  <rosparam command="load" file="$(find aerowake_params)/params/controller/milestone_2_gains.yaml"/>
+</node>
+
+<!-- VICON sensor -->
+<node name="vicon_sensor" pkg="aerowake_utils" type="vicon_sensor.py" output="screen">
+  <remap from="vicon" to="/aerowake_drone/vicon/filtered"/>
+</node>
+
+<!-- ekf -->
+<node name="estimator" pkg="roscopter" type="ekf_node" output="screen">
+  <remap from="imu" to="/imu/data"/>
+  <remap from="odom" to="odometry"/>
+  <rosparam command="load" file="$(find aerowake_params)/params/ekf/mit-uav-mocap.yaml"/>
+</node>
+
+</launch>
