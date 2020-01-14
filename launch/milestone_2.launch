@@ -15,7 +15,7 @@
 
 <!-- VICON sensor -->
 <node name="vicon_sensor" pkg="aerowake_utils" type="vicon_sensor.py" output="screen">
-  <remap from="vicon" to="$(arg mavm_name)/vicon/filtered"/>
+  <remap from="vicon" to="$(arg mav_name)/vicon/filtered"/>
 </node>
 
 <!-- Estimator -->

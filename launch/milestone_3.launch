@@ -3,10 +3,16 @@
   <arg name="mav_name"      default="aerowake_uav"/>
   <arg name="control_param" default="milestone_2_gains"/>
   <arg name="ekf_param"     default="mit-uav-mocap"/>
+  <arg name="ukf_param"     default="mit-uav-ukf"/>
+  <arg name="motor_param"   default="mit-uav-motor"/>
+  <arg name="frame_param"   default="mit-uav-frame"/>
 
   <!-- Parameter Files -->
   <arg name="control_paramfile" default="$(find aerowake_params)/params/controller/$(arg control_param).yaml"/>
   <arg name="ekf_paramfile"     default="$(find aerowake_params)/params/ekf/$(arg ekf_param).yaml"/>
+  <arg name="ukf_paramfile"     default="$(find aerowake_params)/params/ukf/$(arg ukf_param).yaml"/>
+  <arg name="motor_paramfile"   default="$(find aerowake_params)/params/motor/$(arg motor_param).yaml"/>
+  <arg name="frame_paramfile"   default="$(find aerowake_params)/params/frame/$(arg frame_param).yaml"/>
 
 <!-- ROSflight -->
 <node name="rosflight_io" pkg="rosflight" type="rosflight_io" output="screen">
@@ -15,7 +21,7 @@
 
 <!-- VICON sensor -->
 <node name="vicon_sensor" pkg="aerowake_utils" type="vicon_sensor.py" output="screen">
-  <remap from="vicon" to="$(arg mavm_name)/vicon/filtered"/>
+  <remap from="vicon" to="$(arg mav_name)/vicon/filtered"/>
 </node>
 
 <!-- Estimator -->
@@ -23,6 +29,30 @@
   <rosparam command="load" file="$(arg ekf_paramfile)"/>
   <remap from="imu" to="/imu/data"/>
   <remap from="odom" to="odometry"/>
+</node>
+
+<!-- Motor Speed Calculator -->
+<node name="motor_speed" pkg="aerowake_utils" type="motor_speed_calc.py" output="screen">
+  <rosparam command="load" file="$(arg motor_paramfile)"/>
+  <remap from="signals" to="output_raw"/>
+  <remap from="motor_speeds" to="motor_omegas"/>
+</node>
+
+<!-- Odometry Transformer -->
+<node name="odometry_transformer" pkg="aerowake_utils" type="odom_ned2nwu.py" output="screen">
+  <remap from="input_odom" to="odometry"/>
+  <remap from="output_odom" to="odometry_NWU_XAV"/>
+</node>
+
+<!-- Disturbance Observer -->
+<node name="unscented_kalman_filter_node" pkg="unscented_kalman_filter"
+      type="unscented_kalman_filter_node" output="screen">
+  <rosparam command="load" file="$(arg ukf_paramfile)"/>
+  <rosparam command="load" file="$(arg motor_paramfile)"/>
+  <rosparam command="load" file="$(arg frame_paramfile)"/>
+  <remap from="odometry" to="odometry_NWU_XAV"/>
+  <remap from="motor_speed" to="motor_omegas"/>
+  <remap from="external_forces_moments" to="Fext"/>
 </node>
 
 <!-- Control -->
