@@ -1,6 +1,6 @@
 <launch>
   <!-- Parameters -->
-  <arg name="mav_name"      default="aerowake_drone"/>
+  <arg name="mav_name"      default="aerowake_uav"/>
   <arg name="control_param" default="milestone_2_gains"/>
   <arg name="ekf_param"     default="mit-uav-mocap"/>
 
