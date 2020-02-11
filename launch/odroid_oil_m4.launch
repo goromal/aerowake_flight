@@ -1,14 +1,18 @@
 <launch>
 
   <!-- OIL Args -->
-  <arg name="bind_host"   default="localhost"/> <!-- IP of odroid computer -->
+  <arg name="bind_host"   default="192.168.1.140"/> <!-- IP of odroid computer -->
+  <arg name="bind_port"   default="50001"/>
   <arg name="remote_host" default="192.168.1.1"/> <!-- IP of sim computer -->
+  <arg name="remote_port" default="50000"/>
 
   <!-- ROSflight -->
   <node name="rosflight_io" pkg="rosflight" type="rosflight_io" output="screen">
     <param name="udp" value="true"/>
     <param name="bind_host" value="$(arg bind_host)"/>
+    <param name="bind_port" value="$(arg bind_port)"/>
     <param name="remote_host" value="$(arg remote_host)"/>
+    <param name="remote_port" value="$(arg remote_port)"/>
   </node>
 
   <!-- Estimator -->
