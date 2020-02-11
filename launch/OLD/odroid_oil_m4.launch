@@ -1,0 +1,57 @@
+<launch>
+
+  <!-- OIL Args -->
+  <arg name="bind_host"   default="192.168.1.140"/> <!-- IP of odroid computer -->
+  <arg name="bind_port"   default="50001"/>
+  <arg name="remote_host" default="192.168.1.1"/> <!-- IP of sim computer -->
+  <arg name="remote_port" default="50000"/>
+
+  <!-- ROSflight -->
+  <node name="rosflight_io" pkg="rosflight" type="rosflight_io" output="screen">
+    <param name="udp" value="true"/>
+    <param name="bind_host" value="$(arg bind_host)"/>
+    <param name="bind_port" value="$(arg bind_port)"/>
+    <param name="remote_host" value="$(arg remote_host)"/>
+    <param name="remote_port" value="$(arg remote_port)"/>
+  </node>
+
+  <!-- Estimator -->
+  <!-- <node name="estimator" pkg="roscopter" type="ekf_node" output="screen">
+    <rosparam command="load" file="$(arg ekf_paramfile)"/>
+    <remap from="imu" to="imu/data"/>
+    <remap from="reference" to="$(arg mav_name)/truth/NED"/>
+    <remap from="odom" to="odometry"/>
+  </node> -->
+
+  <!-- Control -->
+  <!-- <node name="controller" pkg="roscopter" type="controller" output="screen">
+    <rosparam command="load" file="$(arg control_paramfile)"/> -->
+    <!-- <remap from="estimate" to="odometry"/> -->
+    <!-- <remap from="estimate" to="$(arg mav_name)/truth/NED"/>
+  </node> -->
+
+  <!-- Motor Speed Calculator -->
+  <!-- <node name="motor_speed" pkg="aerowake_utils" type="motor_speed_calc.py" output="screen">
+    <rosparam command="load" file="$(arg motor_paramfile)"/>
+    <remap from="signals" to="output_raw"/>
+    <remap from="motor_speeds" to="motor_omegas"/>
+  </node> -->
+
+  <!-- Odometry Transformer -->
+  <!-- <node name="odometry_transformer" pkg="aerowake_utils" type="odom_ned2nwu.py" output="screen">
+    <remap from="input_odom" to="odometry"/>
+    <remap from="output_odom" to="odometry_NWU_XAV"/>
+  </node> -->
+
+  <!-- Disturbance Observer -->
+  <!-- <node name="unscented_kalman_filter_node" pkg="unscented_kalman_filter"
+        type="unscented_kalman_filter_node" output="screen">
+    <rosparam command="load" file="$(arg ukf_paramfile)"/>
+    <rosparam command="load" file="$(arg motor_paramfile)"/>
+    <rosparam command="load" file="$(arg frame_paramfile)"/>
+    <remap from="odometry" to="odometry_NWU_XAV"/>
+    <remap from="motor_speed" to="motor_omegas"/>
+    <remap from="external_forces_moments" to="Fext"/>
+  </node> -->
+
+</launch>
