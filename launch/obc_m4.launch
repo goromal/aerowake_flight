@@ -5,15 +5,19 @@
   <arg name="sim"           default="false"/>
   <arg name="oil"           default="false"/>
   <arg name="vicon"         default="true"/>
+  <arg name="auto_arm"      default="false"/>
   <!-- <arg name="record"        default="false"/> -->
   <arg name="mav_name"      default="aerowake_MIT"/>
+  <arg name="vis_debug"     default="0"/>
 
+  <arg name="rf_param"      default="rosflight_params"/>
   <arg name="control_param" default="milestone_2_gains"/>
   <arg name="ekf_param"     default="mit-uav-mocap"/>
   <arg name="motor_param"   default="mit-uav-motor"/>
   <arg name="frame_param"   default="mit-uav-frame"/>
   <arg name="ukf_param"     default="mit-uav-ukf"/>
   <arg name="vis_param"     default="mit-uav-sim"/>
+  <arg name="bench_param"   default="vis-bench"/>
   <arg name="camcfg_param"  default="camera_config_GREENLIGHTS"/> <!-- ?? -->
   <arg name="camcal_param"  default="calib-small-1"/> <!-- ?? -->
 
@@ -32,6 +36,7 @@
   <arg     if="$(arg oil)" name="fcu_port"   default="50001"/>
 
   <!-- Parameter Files -->
+  <arg name="rf_paramfile"      default="$(find aerowake_params)/params/$(arg rf_param).yml"/>
   <arg name="control_paramfile" default="$(find aerowake_params)/params/controller/$(arg control_param).yaml"/>
   <arg name="ekf_paramfile"     default="$(find aerowake_params)/params/ekf/$(arg ekf_param).yaml"/>
   <arg name="ukf_paramfile"     default="$(find aerowake_params)/params/ukf/$(arg ukf_param).yaml"/>
@@ -39,6 +44,7 @@
   <arg name="frame_paramfile"   default="$(find aerowake_params)/params/frame/$(arg frame_param).yaml"/>
   <arg name="vis_paramfile"     default="$(find aerowake_params)/params/vision/$(arg vis_param).yaml"/>
   <arg name="camcal_paramfile"  default="$(find aerowake_params)/params/camera/$(arg camcal_param).yaml"/>
+  <arg name="bench_paramfile"   default="$(find aerowake_params)/params/bench/$(arg bench_param).yaml"/>
 
   <!-- ROSflight -->
   <node name="rosflight_io" pkg="rosflight" type="rosflight_io" output="screen">
@@ -50,6 +56,22 @@
     <param name="port"        value="/dev/ttyACM0"/>
   </node>
 
+  <!-- Automatic IMU calibration and RC arming, if desired -->
+  <group if="$(arg sim)">
+    <group if="$(arg auto_arm)">
+      <node name="imu_calibrator" pkg="aerowake_utils" type="imu_calibrator.py" output="screen">
+        <param name="wait_secs" value="4.0"/>
+      </node>
+      <node name="automatic_armer" pkg="aerowake_utils" type="automatic_rc.py" output="screen">
+        <param name="rosflight_paramfile" value="$(arg rf_paramfile)"/>
+        <param name="wait_secs" value="9.0"/>
+      </node>
+    </group>
+    <node name="benchmarker" pkg="aerowake_utils" type="benchmark_commander.py" output="screen">
+      <rosparam command="load" file="$(arg bench_paramfile)"/>
+    </node>
+  </group>
+
   <!-- Vision Bridge -->
   <node name="vision_bridge" pkg="aerowake_vision" type="vision_system_bridge" output="screen">
     <rosparam command="load" file="$(arg frame_paramfile)"/>
@@ -58,7 +80,7 @@
 
   <!-- Vision System -->
   <node name="vision_system" pkg="aerowake_vision" type="vision_system.py" output="screen">
-    <param name="debug" value="1"/>
+    <param name="debug" value="$(arg vis_debug)"/>
     <rosparam command="load" file="$(arg camcal_paramfile)"/>
     <rosparam command="load" file="$(arg vis_paramfile)"/>
     <rosparam command="load" file="$(arg frame_paramfile)"/>
