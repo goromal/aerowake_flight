@@ -15,6 +15,7 @@
   <!-- Parameter Files -->
   <arg name="frame_paramfile"   default="$(find aerowake_params)/params/frame/$(arg frame_param).yaml"/>
   <arg name="vis_paramfile"     default="$(find aerowake_params)/params/vision/$(arg vis_param).yaml"/>
+  <arg name="camcfg_paramfile"  default="$(find aerowake_params)/params/camera/$(arg camcfg_param).yaml"/>
   <arg name="camcal_paramfile"  default="$(find aerowake_params)/params/camera/$(arg camcal_param).yaml"/>
 
   <!-- ROSflight -->
