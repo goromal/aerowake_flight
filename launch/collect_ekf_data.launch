@@ -16,7 +16,6 @@
   <arg name="frame_paramfile"   default="$(find aerowake_params)/params/frame/$(arg frame_param).yaml"/>
   <arg name="vis_paramfile"     default="$(find aerowake_params)/params/vision/$(arg vis_param).yaml"/>
   <arg name="camcal_paramfile"  default="$(find aerowake_params)/params/camera/$(arg camcal_param).yaml"/>
-  <arg name="bench_paramfile"   default="$(find aerowake_params)/params/bench/$(arg bench_param).yaml"/>
 
   <!-- ROSflight -->
   <node name="rosflight_io" pkg="rosflight" type="rosflight_io" output="screen">
