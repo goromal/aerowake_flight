@@ -53,7 +53,7 @@
     <param name="bind_port"   value="$(arg obc_port)"/>
     <param name="remote_host" value="$(arg fcu_host)"/>
     <param name="remote_port" value="$(arg fcu_port)"/>
-    <param name="port"        value="/dev/ttyACM0"/>
+    <param name="port"        value="/dev/rosflight"/>
   </node>
 
   <!-- Automatic IMU calibration and RC arming, if desired -->

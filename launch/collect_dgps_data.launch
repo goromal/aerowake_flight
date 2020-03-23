@@ -1,0 +1,28 @@
+<launch>
+
+  <!-- ====================== PARAMETERS ======================= -->
+
+  <!-- <arg name="record"        default="false"/> -->
+
+  <arg name="frame_param"   default="mit-uav-frame"/> <!-- ADD T_UAV_RGPS FOR ESTIMATOR ++++ -->
+  <arg name="vis_param"     default="mit-green-roof"/>
+  <!-- GPS PARAM FOR ESTIMATOR, like ref lat, lon, T_SHIP_BGPS ++++ -->
+  <arg name="camcfg_param"  default="camera_config_GREENLIGHTS"/>
+  <arg name="camcal_param"  default="calib-small-1"/>
+
+  <!-- =========================================================== -->
+
+  <!-- Parameter Files -->
+  <arg name="frame_paramfile"   default="$(find aerowake_params)/params/frame/$(arg frame_param).yaml"/>
+  <arg name="vis_paramfile"     default="$(find aerowake_params)/params/vision/$(arg vis_param).yaml"/>
+  <arg name="camcfg_paramfile"  default="$(find aerowake_params)/params/camera/$(arg camcfg_param).yaml"/>
+  <arg name="camcal_paramfile"  default="$(find aerowake_params)/params/camera/$(arg camcal_param).yaml"/>
+  
+  <!-- GPS -->
+  <node pkg="ublox_gps" type="ublox_gps" name="rover" output="screen">
+    <param name="device" value="/dev/rover"/>
+    <rosparam command="load" file="$(find ublox_gps)/config/MB.yaml"/>
+    <rosparam command="load" file="$(find ublox_gps)/config/Rover_MB.yaml"/>
+  </node>
+
+</launch>
