@@ -4,7 +4,7 @@
 
   <arg name="sim" default="false"/>
 
-  <arg name="rf_param" default="rosflight_params"/>
+  <arg name="rf_param" default="RF3_2020"/>
   <!-- ++CHANGE++ -->
 
   <!-- =========================================================== -->
