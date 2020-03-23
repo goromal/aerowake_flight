@@ -6,7 +6,6 @@
   <arg name="oil"           default="false"/>
   <arg name="vicon"         default="true"/>
   <arg name="auto_arm"      default="false"/>
-  <!-- <arg name="record"        default="false"/> -->
   <arg name="mav_name"      default="aerowake_MIT"/>
   <arg name="vis_debug"     default="0"/>
 
@@ -53,7 +52,7 @@
     <param name="bind_port"   value="$(arg obc_port)"/>
     <param name="remote_host" value="$(arg fcu_host)"/>
     <param name="remote_port" value="$(arg fcu_port)"/>
-    <param name="port"        value="/dev/ttyACM0"/>
+    <param name="port"        value="/dev/rosflight"/>
   </node>
 
   <!-- Automatic IMU calibration and RC arming, if desired -->

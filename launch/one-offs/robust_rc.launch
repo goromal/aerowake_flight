@@ -1,0 +1,50 @@
+<launch>
+
+  <!-- ============= OBC PARAMETERS FOR MILESTONE 4 ============== -->
+
+  <arg name="sim" default="false"/>
+
+  <arg name="rf_param" default="rosflight_params"/>
+  <!-- ++CHANGE++ -->
+
+  <!-- =========================================================== -->
+
+  <!-- Serial Communication Parameters -->
+  <arg unless="$(arg sim)" name="udp" default="false"/>
+  <arg if="$(arg sim)" name="udp" default="true"/>
+  <arg unless="$(arg oil)" name="obc_host" default="localhost"/>
+  <arg unless="$(arg oil)" name="obc_port" default="14525"/>
+  <arg unless="$(arg oil)" name="fcu_host" default="localhost"/>
+  <arg unless="$(arg oil)" name="fcu_port" default="14520"/>
+  <arg if="$(arg oil)" name="obc_host" default="192.168.1.140"/>
+  <arg if="$(arg oil)" name="obc_port" default="50000"/>
+  <arg if="$(arg oil)" name="fcu_host" default="192.168.1.1"/>
+  <arg if="$(arg oil)" name="fcu_port" default="50001"/>
+
+  <!-- Parameter Files -->
+  <arg name="rf_paramfile" default="$(find aerowake_params)/params/$(arg rf_param).yml"/>
+
+  <!-- ROSflight -->
+  <node name="rosflight_io" pkg="rosflight" type="rosflight_io" output="screen">
+    <param name="udp" value="$(arg udp)"/>
+    <param name="bind_host" value="$(arg obc_host)"/>
+    <param name="bind_port" value="$(arg obc_port)"/>
+    <param name="remote_host" value="$(arg fcu_host)"/>
+    <param name="remote_port" value="$(arg fcu_port)"/>
+    <param name="port" value="/dev/rosflight"/>
+  </node>
+
+  <!-- Automatic IMU calibration always -->
+  <node name="imu_calibrator" pkg="aerowake_utils" type="imu_calibrator.py" output="screen">
+    <param name="wait_secs" value="4.0"/>
+  </node>
+
+  <!-- If sim, play the original bag file; otherwise, will use hardware RC (no ROS nodes needed) -->
+  <group if="$(arg sim)">
+    <node name="rc_spoofer" pkg="aerowake_utils" type="rc_dip_spoofer.py" output="screen">
+      <param name="rosflight_paramfile" value="$(arg rf_paramfile)"/>
+      <param name="wait_secs" value="9.0"/>
+    </node>
+  </group>
+
+</launch>
