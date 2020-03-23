@@ -42,12 +42,4 @@
     <param name="wait_secs" value="4.0"/>
   </node>
 
-  <!-- If sim, play the original bag file; otherwise, will use hardware RC (no ROS nodes needed) -->
-  <group if="$(arg sim)">
-    <node name="rc_spoofer" pkg="aerowake_utils" type="rc_dip_spoofer.py" output="screen">
-      <param name="rosflight_paramfile" value="$(arg rf_paramfile)"/>
-      <param name="wait_secs" value="9.0"/>
-    </node>
-  </group>
-
 </launch>
