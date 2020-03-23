@@ -9,6 +9,9 @@
 
   <!-- =========================================================== -->
 
+  <arg unless="$(arg sim)" name="oil" value="false"/>
+  <arg     if="$(arg sim)" name="oil" value="true"/>
+
   <!-- Serial Communication Parameters -->
   <arg unless="$(arg sim)" name="udp" default="false"/>
   <arg if="$(arg sim)" name="udp" default="true"/>
