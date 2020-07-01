@@ -1,0 +1,3 @@
+string command # takeoff, RTH, land, sweep, center
+---
+bool success

@@ -1,0 +1,68 @@
+<launch>
+  <!-- Parameters -->
+  <arg name="vision"        default="false"/>
+
+  <arg name="mav_name"      default="aerowake_uav"/>
+  <arg name="control_param" default="milestone_2_gains"/>
+  <arg name="ekf_param"     default="mit-uav-mocap"/>
+  <arg name="ukf_param"     default="mit-uav-ukf"/>
+  <arg name="motor_param"   default="mit-uav-motor"/>
+  <arg name="frame_param"   default="mit-uav-frame"/>
+  <arg name="vis_param"     default="mit-green-roof"/>
+  <arg name="camcfg_param"  default="camera_config_GREENLIGHTS"/>
+  <arg name="camcal_param"  default="calib-small-1"/>
+
+
+  <!-- Parameter Files -->
+  <arg name="control_paramfile" default="$(find aerowake_params)/params/controller/$(arg control_param).yaml"/>
+  <arg name="ekf_paramfile"     default="$(find aerowake_params)/params/ekf/$(arg ekf_param).yaml"/>
+  <arg name="ukf_paramfile"     default="$(find aerowake_params)/params/ukf/$(arg ukf_param).yaml"/>
+  <arg name="motor_paramfile"   default="$(find aerowake_params)/params/motor/$(arg motor_param).yaml"/>
+  <arg name="frame_paramfile"   default="$(find aerowake_params)/params/frame/$(arg frame_param).yaml"/>
+  <arg name="vis_paramfile"     default="$(find aerowake_params)/params/vision/$(arg vis_param).yaml"/>
+  <arg name="camcfg_paramfile"  default="$(find aerowake_params)/params/camera/$(arg camcfg_param).yaml"/>
+  <arg name="camcal_paramfile"  default="$(find aerowake_params)/params/camera/$(arg camcal_param).yaml"/>
+
+<!-- ROSflight -->
+<node name="rosflight_io" pkg="rosflight" type="rosflight_io" output="screen">
+  <param name="port" value="/dev/rosflight"/>
+</node>
+
+<!-- VICON sensor -->
+<node name="vicon_sensor" pkg="aerowake_utils" type="vicon_sensor_new.py" output="screen">
+  <remap from="vicon" to="$(arg mav_name)/world"/>
+</node>
+
+<!-- Estimator -->
+<node name="estimator" pkg="roscopter" type="ekf_node" output="screen">
+  <rosparam command="load" file="$(arg ekf_paramfile)"/>
+  <remap from="imu" to="/imu/data"/>
+  <remap from="odom" to="odometry"/>
+</node>
+
+<!-- OPTIONAL VISION SYSTEM -->
+<group if="$(arg vision)">
+  <!-- Camera -->
+  <rosparam command="load" file="$(arg camcfg_paramfile)"/>
+  <group ns="camera">
+    <node pkg="nodelet" type="nodelet" name="camera_nodelet_manager" args="manager" />
+    <node name="pointgrey_camera" pkg="pointgrey_camera_driver" type="camera_node"
+          args="load pointgrey_camera_driver/PointGreyCameraNodelet camera_nodelet_manager">
+      <param name="camera_info_url" value="file://$(arg camcal_paramfile)"/>
+      <param name="frame_id" value="camera" />
+      <param name="auto_shutter" value="true"/>
+      <param name="video_mode" value="format7_mode0" />
+      <param name="auto_white_balance" value="true"/>
+    </node>
+  </group>
+
+  <!-- Vision System -->
+  <node name="vision_system" pkg="aerowake_vision" type="vision_system.py" output="screen">
+    <param name="debug" value="0"/>
+    <rosparam command="load" file="$(arg camcal_paramfile)"/>
+    <rosparam command="load" file="$(arg vis_paramfile)"/>
+    <rosparam command="load" file="$(arg frame_paramfile)"/>
+  </node>
+</group>
+
+</launch>

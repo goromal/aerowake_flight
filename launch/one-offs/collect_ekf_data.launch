@@ -1,0 +1,77 @@
+<launch>
+
+  <!-- ====================== PARAMETERS ======================= -->
+
+  <!-- <arg name="record"        default="false"/> -->
+
+  <arg name="frame_param"   default="mit-uav-frame"/> <!-- ADD T_UAV_RGPS FOR ESTIMATOR ++++ -->
+  <arg name="vis_param"     default="mit-green-roof"/>
+  <!-- GPS PARAM FOR ESTIMATOR, like ref lat, lon, T_SHIP_BGPS ++++ -->
+  <arg name="camcfg_param"  default="camera_config_GREENLIGHTS"/>
+  <arg name="camcal_param"  default="calib-small-1"/>
+
+  <!-- =========================================================== -->
+
+  <!-- Parameter Files -->
+  <arg name="frame_paramfile"   default="$(find aerowake_params)/params/frame/$(arg frame_param).yaml"/>
+  <arg name="vis_paramfile"     default="$(find aerowake_params)/params/vision/$(arg vis_param).yaml"/>
+  <arg name="camcfg_paramfile"  default="$(find aerowake_params)/params/camera/$(arg camcfg_param).yaml"/>
+  <arg name="camcal_paramfile"  default="$(find aerowake_params)/params/camera/$(arg camcal_param).yaml"/>
+
+  <!-- ROSflight -->
+  <node name="rosflight_io" pkg="rosflight" type="rosflight_io" output="screen">
+    <param name="udp"         value="false"/>
+    <param name="port"        value="/dev/rosflight"/>
+  </node>
+
+  <!-- Vision Bridge -->
+  <!-- <node name="vision_bridge" pkg="aerowake_vision" type="vision_system_bridge" output="screen">
+    <rosparam command="load" file="$(arg frame_paramfile)"/>
+    <remap from="rel_odometry" to="$(arg mav_name)/rel_truth/NED"/>
+  </node> -->
+
+  <!-- Camera -->
+  <rosparam command="load" file="$(arg camcfg_paramfile)"/>
+  <group ns="camera">
+    <node pkg="nodelet" type="nodelet" name="camera_nodelet_manager" args="manager" />
+    <node name="pointgrey_camera" pkg="pointgrey_camera_driver" type="camera_node"
+          args="load pointgrey_camera_driver/PointGreyCameraNodelet camera_nodelet_manager">
+      <param name="camera_info_url" value="file://$(arg camcal_paramfile)"/>
+      <param name="frame_id" value="camera" />
+      <param name="auto_shutter" value="true"/>
+      <param name="video_mode" value="format7_mode0" />
+      <param name="auto_white_balance" value="true"/>
+    </node>
+  </group>
+
+  <!-- Vision System -->
+  <node name="vision_system" pkg="aerowake_vision" type="vision_system.py" output="screen">
+    <param name="debug" value="0"/>
+    <rosparam command="load" file="$(arg camcal_paramfile)"/>
+    <rosparam command="load" file="$(arg vis_paramfile)"/>
+    <rosparam command="load" file="$(arg frame_paramfile)"/>
+  </node>
+
+  <!-- GPS -->
+  <node pkg="ublox_gps" type="ublox_gps" name="rover" output="screen">
+    <param name="device" value="/dev/rover"/>
+    <rosparam command="load" file="$(find ublox_gps)/config/MB.yaml"/>
+    <rosparam command="load" file="$(find ublox_gps)/config/Rover_MB.yaml"/>
+  </node>
+
+
+  <!-- Estimator -->
+  <!-- <node name="estimator" pkg="roscopter" type="ekf_node" output="screen">
+    <rosparam command="load" file="$(arg ekf_paramfile)"/>
+    <remap from="imu" to="imu/data"/>
+    <remap from="reference" to="$(arg mav_name)/truth/NED"/>
+    <remap from="odom" to="odometry"/>
+  </node> -->
+
+  <!-- ROSbag recorder -->
+  <!-- <group if="$(arg record)">
+    <node name="recorder" pkg="rosbag" type="record" output="screen"
+          args="-o obc_m4 /vision_pose"/>
+  </group> -->
+
+</launch>

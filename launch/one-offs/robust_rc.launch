@@ -39,7 +39,7 @@
 
   <!-- Automatic IMU calibration always -->
   <node name="imu_calibrator" pkg="aerowake_utils" type="imu_calibrator.py" output="screen">
-    <param name="wait_secs" value="4.0"/>
+    <param name="wait_secs" value="6.0"/>
   </node>
 
 </launch>
